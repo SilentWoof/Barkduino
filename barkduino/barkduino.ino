@@ -1,4 +1,7 @@
 #include <Servo.h>
+#include "traits/trait_wait.h"
+#include "poses/leg_primitives.h"
+#include "poses/pose_composites.h"
 
 // Servo objects
 Servo front_left;
@@ -23,7 +26,14 @@ const int MODE_CALIBRATION  = 3;
 const int MODE_WAGGLE_TEST  = 4;
 const int ACTIVE_MODE       = MODE_PRODUCTION;
 
-const int SELECTED_TRAIT = 1;  // 1 = Wait
+const int SELECTED_TRAIT = 0;  // Index in traitRegistry[]
+
+// Trait registry
+typedef void (*TraitFunction)();
+TraitFunction traitRegistry[] = {
+  trait_wait,
+  // Add future traits here like trait_wave, trait_bow, etc.
+};
 
 void setup() {
   Serial.begin(9600);
@@ -61,6 +71,7 @@ void loop() {
       runTraitTestingLoop();
       break;
     case MODE_CALIBRATION:
+      runCalibrationMode();
       break;
     case MODE_WAGGLE_TEST:
       runWaggleTest();
@@ -71,9 +82,7 @@ void loop() {
   }
 }
 
-//
 // 🔧 Distance Sensor
-//
 long getDistanceCM() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -94,9 +103,7 @@ bool isTriggerDetected() {
   return (distance > 0 && distance < 20);
 }
 
-//
 // 🔧 Synchronized Sweep Function
-//
 void sweepPair(Servo& s1, int start1, int end1,
                Servo& s2, int start2, int end2,
                int duration_ms) {
@@ -117,9 +124,7 @@ void sweepPair(Servo& s1, int start1, int end1,
   }
 }
 
-//
 // 🔧 Synchronization Wrappers
-//
 void syncRearLegs(int leftTarget, int rightTarget, int duration = 500) {
   Serial.println("Syncing rear legs...");
   int leftStart = rear_left.read();
@@ -134,66 +139,7 @@ void syncFrontLegs(int leftTarget, int rightTarget, int duration = 500) {
   sweepPair(front_left, leftStart, leftTarget, front_right, rightStart, rightTarget, duration);
 }
 
-//
-// 🧩 Primitive Leg Positions
-//
-void rearLegsFoldedForward() {
-  Serial.println("Rear legs: folded forward");
-  syncRearLegs(0, 180);
-}
-
-void rearLegsStraight() {
-  Serial.println("Rear legs: straight");
-  syncRearLegs(100, 60);
-}
-
-void frontLegsFoldedBack() {
-  Serial.println("Front legs: folded back");
-  syncFrontLegs(160, 20);
-}
-
-void frontLegsStraight() {
-  Serial.println("Front legs: straight");
-  syncFrontLegs(60, 110);
-}
-
-//
-// 🎭 Composite Poses
-//
-void poseSleeping() {
-  Serial.println("Pose: Sleeping");
-  rearLegsFoldedForward();
-  delay(500);
-  frontLegsFoldedBack();
-}
-
-void poseStanding() {
-  Serial.println("Pose: Standing");
-  frontLegsStraight();
-  delay(500);
-  rearLegsStraight();
-}
-
-//
-// 🎬 Traits
-//
-void performTrait(int traitID) {
-  Serial.print("Executing trait ID: ");
-  Serial.println(traitID);
-  switch (traitID) {
-    case 1:
-      Serial.println("Trait: Wait");
-      delay(2000);
-      break;
-    default:
-      Serial.println("Unknown trait.");
-      break;
-  }
-}
-
-//
 // 🚦 Mode Loops
-//
 void runProductionLoop() {
   if (isTriggerDetected()) {
     Serial.println("Production Mode: Trigger detected.");
@@ -204,7 +150,12 @@ void runProductionLoop() {
     poseStanding();
     delay(500);
 
-    performTrait(1);  // Only trait: wait
+    int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
+    int selected = random(traitCount);
+    Serial.print("Production Mode: Selected trait ID ");
+    Serial.println(selected);
+    traitRegistry[selected]();
+
     delay(500);
 
     Serial.println("Returning to sleep...");
@@ -224,7 +175,15 @@ void runTraitTestingLoop() {
     poseStanding();
     delay(500);
 
-    performTrait(SELECTED_TRAIT);  // Should be 1 for "wait"
+    int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
+    if (SELECTED_TRAIT >= 0 && SELECTED_TRAIT < traitCount) {
+      Serial.print("Trait Testing Mode: Selected trait ID ");
+      Serial.println(SELECTED_TRAIT);
+      traitRegistry[SELECTED_TRAIT]();
+    } else {
+      Serial.println("Trait Testing Mode: Invalid trait ID.");
+    }
+
     delay(500);
 
     Serial.println("Returning to sleep...");
