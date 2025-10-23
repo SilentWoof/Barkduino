@@ -6,18 +6,57 @@
 
 // 🎭 Composite Poses
 
-void poseSleeping() {
-  Serial.println("Pose: Sleeping");
-  rearLegsFoldedForward();
+void poseSleep() {
+  Serial.println("Pose: Sleep");
+  RearForward();       // Rear legs folded forward.
   delay(500);
-  frontLegsFoldedBack();
+  FrontBack();         // Front legs folded back
 }
 
-void poseStanding() {
-  Serial.println("Pose: Standing");
-  frontLegsStraight();
+void poseStand() {
+  Serial.println("Pose: Stand");
+  FrontStraight();     // Front legs straight
   delay(500);
-  rearLegsStraight();
+  RearStraight();      // Rear legs straight
+}
+
+void poseSit() {
+  Serial.println("Pose: Sit");
+  RearForward();       // Rear legs folded forward under the body
+  delay(500);
+  FrontStraight();     // Front legs upright for posture
+}
+
+void poseBow() {
+  Serial.println("Pose: Bow");
+  RearStraight();         // Rear legs stay upright
+  delay(500);
+  FrontBack();            // Front legs fold back to lower the front
+}
+
+void posePounce() {
+  Serial.println("Pose: Pounce");
+  RearMidwayBack();       // Rear legs crouched, ready to spring
+  delay(500);
+  FrontForward();         // Front legs extended forward
+}
+
+void poseSpread() {
+  Serial.println("Pose: Spread");
+  FrontForward();         // Front legs stretched forward
+  delay(500);
+  RearBack();             // Rear legs stretched backward
+}
+
+void posePoint() {
+  Serial.println("Pose: Point");
+
+  RearMidwayBack();       // Rear legs crouched, ready to spring
+  delay(500);
+
+  Serial.println("Front legs: asymmetrical point");
+  front_left.write(60);   // Front left leg: straight
+  front_right.write(0);   // Front right leg: forward
 }
 
 #endif
