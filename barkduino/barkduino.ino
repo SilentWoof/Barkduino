@@ -10,23 +10,23 @@ Servo rear_left;
 Servo rear_right;
 
 // Servo pins
-const int pin_front_left  = 11;
+const int pin_front_left  = 9;
 const int pin_front_right = 10;
-const int pin_rear_left   = 12;
-const int pin_rear_right  = 9;
+const int pin_rear_left   = 11;
+const int pin_rear_right  = 12;
 
 // Distance sensor pins
-const int trigPin = 4;
-const int echoPin = 5;
+const int echoPin = 4;
+const int trigPin = 5;
 
-// Mode selection
-const int MODE_PRODUCTION   = 1;
-const int MODE_TRAIT_TEST   = 2;
-const int MODE_CALIBRATION  = 3;
-const int MODE_WAGGLE_TEST  = 4;
-const int ACTIVE_MODE       = MODE_PRODUCTION;
+// 🚦 Mode Constants
+const int MODE_1 = 1;  // Production Mode: Triggered loop with random trait
+const int MODE_2 = 2;  // Trait Testing Mode: Triggered loop with selected trait
+const int MODE_3 = 3;  // Calibration Mode: Static standing pose for tuning
+const int MODE_4 = 4;  // Waggle Test Mode: Cycles each leg for servo check
 
-const int SELECTED_TRAIT = 0;  // Index in traitRegistry[]
+const int ACTIVE_MODE = MODE_1;  // Set active mode here
+const int SELECTED_TRAIT = 0;    // Index in traitRegistry[]
 
 // Trait registry
 typedef void (*TraitFunction)();
@@ -50,31 +50,31 @@ void setup() {
   delay(100);
 
   Serial.print("Active mode: ");
-  if (ACTIVE_MODE == MODE_PRODUCTION) Serial.println("Production");
-  else if (ACTIVE_MODE == MODE_TRAIT_TEST) Serial.println("Trait Testing");
-  else if (ACTIVE_MODE == MODE_CALIBRATION) Serial.println("Calibration");
-  else if (ACTIVE_MODE == MODE_WAGGLE_TEST) Serial.println("Waggle Test");
+  if (ACTIVE_MODE == MODE_1) Serial.println("Mode 1 — Production");
+  else if (ACTIVE_MODE == MODE_2) Serial.println("Mode 2 — Trait Testing");
+  else if (ACTIVE_MODE == MODE_3) Serial.println("Mode 3 — Calibration");
+  else if (ACTIVE_MODE == MODE_4) Serial.println("Mode 4 — Waggle Test");
   else Serial.println("Unknown");
 
-  if (ACTIVE_MODE != MODE_WAGGLE_TEST) {
-    Serial.println("Setting initial pose: Sleeping");
-    poseSleeping();
+  if (ACTIVE_MODE != MODE_4) {
+    Serial.println("Setting initial pose: Sleep");
+    poseSleep();
   }
 }
 
 void loop() {
   switch (ACTIVE_MODE) {
-    case MODE_PRODUCTION:
-      runProductionLoop();
+    case MODE_1:
+      runProductionLoop();  // Mode 1: Triggered loop with random trait
       break;
-    case MODE_TRAIT_TEST:
-      runTraitTestingLoop();
+    case MODE_2:
+      runTraitTestingLoop();  // Mode 2: Triggered loop with selected trait
       break;
-    case MODE_CALIBRATION:
-      runCalibrationMode();
+    case MODE_3:
+      runCalibrationMode();  // Mode 3: Static standing pose for tuning
       break;
-    case MODE_WAGGLE_TEST:
-      runWaggleTest();
+    case MODE_4:
+      runWaggleTest();  // Mode 4: Cycles each leg for servo check
       break;
     default:
       Serial.println("Invalid mode selected.");
@@ -142,24 +142,24 @@ void syncFrontLegs(int leftTarget, int rightTarget, int duration = 500) {
 // 🚦 Mode Loops
 void runProductionLoop() {
   if (isTriggerDetected()) {
-    Serial.println("Production Mode: Trigger detected.");
+    Serial.println("Mode 1 — Production: Trigger detected.");
 
-    poseSleeping();
+    poseSleep();
     delay(500);
 
-    poseStanding();
+    poseStand();
     delay(500);
 
     int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
     int selected = random(traitCount);
-    Serial.print("Production Mode: Selected trait ID ");
+    Serial.print("Mode 1 — Production: Selected trait ID ");
     Serial.println(selected);
     traitRegistry[selected]();
 
     delay(500);
 
     Serial.println("Returning to sleep...");
-    poseSleeping();
+    poseSleep();
     Serial.println("Cycle complete. Awaiting next trigger...");
     delay(1000);
   }
@@ -167,40 +167,40 @@ void runProductionLoop() {
 
 void runTraitTestingLoop() {
   if (isTriggerDetected()) {
-    Serial.println("Trait Testing Mode: Trigger detected.");
+    Serial.println("Mode 2 — Trait Testing: Trigger detected.");
 
-    poseSleeping();
+    poseSleep();
     delay(500);
 
-    poseStanding();
+    poseStand();
     delay(500);
 
     int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
     if (SELECTED_TRAIT >= 0 && SELECTED_TRAIT < traitCount) {
-      Serial.print("Trait Testing Mode: Selected trait ID ");
+      Serial.print("Mode 2 — Trait Testing: Selected trait ID ");
       Serial.println(SELECTED_TRAIT);
       traitRegistry[SELECTED_TRAIT]();
     } else {
-      Serial.println("Trait Testing Mode: Invalid trait ID.");
+      Serial.println("Mode 2 — Trait Testing: Invalid trait ID.");
     }
 
     delay(500);
 
     Serial.println("Returning to sleep...");
-    poseSleeping();
+    poseSleep();
     Serial.println("Cycle complete. Awaiting next trigger...");
     delay(1000);
   }
 }
 
 void runCalibrationMode() {
-  Serial.println("Mode: Servo Calibration");
-  poseStanding();
+  Serial.println("Mode 3 — Servo Calibration");
+  poseStand();
 }
 
 void runWaggleTest() {
-  Serial.println("Mode: Waggle Test");
-  poseStanding();
+  Serial.println("Mode 4 — Waggle Test");
+  poseStand();
 
   waggleLeg(front_left, "Front Left");
   waggleLeg(front_right, "Front Right");
