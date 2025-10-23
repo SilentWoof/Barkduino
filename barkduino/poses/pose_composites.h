@@ -5,7 +5,7 @@
 #include "leg_primitives.h"
 
 // 🎭 Composite Poses
-
+// Sleep and Stand are static poses called and always used in the main loop and training loop.
 void poseSleep() {
   Serial.println("Pose: Sleep");
   RearForward();       // Rear legs folded forward.
@@ -19,6 +19,8 @@ void poseStand() {
   delay(500);
   RearStraight();      // Rear legs straight
 }
+
+// The following poses are called in traits and behaviors.
 
 void poseSit() {
   Serial.println("Pose: Sit");
@@ -50,13 +52,11 @@ void poseSpread() {
 
 void posePoint() {
   Serial.println("Pose: Point");
-
   RearMidwayBack();       // Rear legs crouched, ready to spring
   delay(500);
-
   Serial.println("Front legs: asymmetrical point");
-  front_left.write(60);   // Front left leg: straight
-  front_right.write(0);   // Front right leg: forward
+  front_left.write(0);    // Front left leg: forward (matches FrontForward left)
+  front_right.write(110); // Front right leg: straight (matches FrontStraight right)
 }
 
 #endif
