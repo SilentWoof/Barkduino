@@ -1,21 +1,27 @@
 #include <Servo.h>
-#include "traits/trait_wait.h"
+#include "configs/motion_config.h"  // ⏱️ Centralized motion timing
 #include "poses/leg_primitives.h"
 #include "poses/pose_composites.h"
+#include "traits/trait_bow.h"
+#include "traits/trait_point.h"
+#include "traits/trait_pounce.h"
+#include "traits/trait_sit.h"
+#include "traits/trait_spread.h"
+#include "traits/trait_wait.h"
 
-// Servo objects
+// 🦴 Servo objects for each leg
 Servo front_left;
 Servo front_right;
 Servo rear_left;
 Servo rear_right;
 
-// Servo pins
+// 🧩 Servo pin assignments
 const int pin_front_left  = 9;
 const int pin_front_right = 10;
 const int pin_rear_left   = 11;
 const int pin_rear_right  = 12;
 
-// Distance sensor pins
+// 📡 Distance sensor pins
 const int echoPin = 4;
 const int trigPin = 5;
 
@@ -28,13 +34,18 @@ const int MODE_4 = 4;  // Waggle Test Mode: Cycles each leg for servo check
 const int ACTIVE_MODE = MODE_1;  // Set active mode here
 const int SELECTED_TRAIT = 0;    // Index in traitRegistry[]
 
-// Trait registry
+// 🧠 Trait registry for modular behavior selection
 typedef void (*TraitFunction)();
 TraitFunction traitRegistry[] = {
-  trait_wait,
-  // Add future traits here like trait_wave, trait_bow, etc.
+  trait_bow,        // Index 0
+  trait_point,      // Index 1
+  trait_pounce,     // Index 2
+  trait_sit,        // Index 3
+  trait_spread,     // Index 4
+  trait_wait        // Index 5
 };
 
+// 🛠️ Setup: Initialize servos, sensor, and pose
 void setup() {
   Serial.begin(9600);
   Serial.println("=== Robot Startup ===");
@@ -62,19 +73,20 @@ void setup() {
   }
 }
 
+// 🔁 Main loop: Dispatches to selected mode
 void loop() {
   switch (ACTIVE_MODE) {
     case MODE_1:
-      runProductionLoop();  // Mode 1: Triggered loop with random trait
+      runProductionLoop();  // Random trait on trigger
       break;
     case MODE_2:
-      runTraitTestingLoop();  // Mode 2: Triggered loop with selected trait
+      runTraitTestingLoop();  // Selected trait on trigger
       break;
     case MODE_3:
-      runCalibrationMode();  // Mode 3: Static standing pose for tuning
+      runCalibrationMode();  // Static pose for tuning
       break;
     case MODE_4:
-      runWaggleTest();  // Mode 4: Cycles each leg for servo check
+      runWaggleTest();  // Servo identification test
       break;
     default:
       Serial.println("Invalid mode selected.");
@@ -82,7 +94,7 @@ void loop() {
   }
 }
 
-// 🔧 Distance Sensor
+// 📏 Measure distance from ultrasonic sensor
 long getDistanceCM() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -95,6 +107,7 @@ long getDistanceCM() {
   return distance;
 }
 
+// 🚨 Trigger detection based on proximity
 bool isTriggerDetected() {
   long distance = getDistanceCM();
   Serial.print("Sensor reading: ");
@@ -103,7 +116,7 @@ bool isTriggerDetected() {
   return (distance > 0 && distance < 20);
 }
 
-// 🔧 Synchronized Sweep Function
+// 🔧 Sweep two servos in sync over a duration
 void sweepPair(Servo& s1, int start1, int end1,
                Servo& s2, int start2, int end2,
                int duration_ms) {
@@ -124,31 +137,29 @@ void sweepPair(Servo& s1, int start1, int end1,
   }
 }
 
-// 🔧 Synchronization Wrappers
-void syncRearLegs(int leftTarget, int rightTarget, int duration = 500) {
+// 🔧 Rear leg synchronization wrapper
+void syncRearLegs(int leftTarget, int rightTarget, int duration = DEFAULT_SYNC_DURATION) {
   Serial.println("Syncing rear legs...");
   int leftStart = rear_left.read();
   int rightStart = rear_right.read();
   sweepPair(rear_left, leftStart, leftTarget, rear_right, rightStart, rightTarget, duration);
 }
 
-void syncFrontLegs(int leftTarget, int rightTarget, int duration = 500) {
+// 🔧 Front leg synchronization wrapper
+void syncFrontLegs(int leftTarget, int rightTarget, int duration = DEFAULT_SYNC_DURATION) {
   Serial.println("Syncing front legs...");
   int leftStart = front_left.read();
   int rightStart = front_right.read();
   sweepPair(front_left, leftStart, leftTarget, front_right, rightStart, rightTarget, duration);
 }
 
-// 🚦 Mode Loops
+// 🎭 Mode 1: Random trait execution on trigger
 void runProductionLoop() {
   if (isTriggerDetected()) {
     Serial.println("Mode 1 — Production: Trigger detected.");
 
-    poseSleep();
-    delay(500);
-
     poseStand();
-    delay(500);
+    delay(250);
 
     int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
     int selected = random(traitCount);
@@ -156,24 +167,20 @@ void runProductionLoop() {
     Serial.println(selected);
     traitRegistry[selected]();
 
-    delay(500);
+    delay(250);
 
     Serial.println("Returning to sleep...");
     poseSleep();
     Serial.println("Cycle complete. Awaiting next trigger...");
-    delay(1000);
   }
 }
 
+// 🎭 Mode 2: Selected trait execution on trigger
 void runTraitTestingLoop() {
   if (isTriggerDetected()) {
     Serial.println("Mode 2 — Trait Testing: Trigger detected.");
 
-    poseSleep();
-    delay(500);
-
     poseStand();
-    delay(500);
 
     int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
     if (SELECTED_TRAIT >= 0 && SELECTED_TRAIT < traitCount) {
@@ -184,20 +191,19 @@ void runTraitTestingLoop() {
       Serial.println("Mode 2 — Trait Testing: Invalid trait ID.");
     }
 
-    delay(500);
-
     Serial.println("Returning to sleep...");
     poseSleep();
     Serial.println("Cycle complete. Awaiting next trigger...");
-    delay(1000);
   }
 }
 
+// 🛠️ Mode 3: Static standing pose for calibration
 void runCalibrationMode() {
   Serial.println("Mode 3 — Servo Calibration");
   poseStand();
 }
 
+// 🛠️ Mode 4: Waggle test for servo identification
 void runWaggleTest() {
   Serial.println("Mode 4 — Waggle Test");
   poseStand();
@@ -208,9 +214,10 @@ void runWaggleTest() {
   waggleLeg(rear_right, "Rear Right");
 
   Serial.println("Waggle test complete.");
-  while (true);
+  while (true);  // Halt after test
 }
 
+// 🦿 Waggle a single leg for identification
 void waggleLeg(Servo& leg, const char* label) {
   Serial.print("Waggling "); Serial.println(label);
   int center = leg.read();
