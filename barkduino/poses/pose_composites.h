@@ -50,13 +50,22 @@ void poseSpread() {
   RearBack();             // Rear legs stretched backward
 }
 
-void posePoint() {
+void posePointLeft() {
   Serial.println("Pose: Point");
   RearMidwayBack();       // Rear legs crouched, ready to spring
   delay(500);
   Serial.println("Front legs: asymmetrical point");
   front_left.write(0);    // Front left leg: forward (matches FrontForward left)
   front_right.write(110); // Front right leg: straight (matches FrontStraight right)
+}
+
+void posePointRight() {
+  Serial.println("Pose: Point");
+  RearMidwayBack();       // Rear legs crouched, ready to spring
+  delay(500);
+  Serial.println("Front legs: asymmetrical point");
+  front_left.write(60);    // Front left leg: forward (matches FrontForward left)
+  front_right.write(180); // Front right leg: straight (matches FrontStraight right)
 }
 
 #endif
