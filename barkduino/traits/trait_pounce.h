@@ -12,21 +12,15 @@ void trait_pounce() {
 
   posePounce();        // Crouch with rear legs midway back, front legs forward
   delay(750);          // Initial hold
-
   FrontStraight();     // Extend front legs
-  delay(random(100, 3001));
-
+  delay(random(100, 1001));
   posePounce();        // Return to pounce
   delay(random(100, 3001));
-
   FrontStraight();     // Extend again
-  delay(random(100, 3001));
-
+  delay(random(100, 1001));
   posePounce();        // Return again
   delay(random(100, 3001));
-
   poseStand();         // Final stand
-  delay(random(100, 1001));
 }
 
 #endif
