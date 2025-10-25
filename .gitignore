@@ -1,0 +1,21 @@
+# Arduino build artifacts
+*/build/
+*/*.hex
+*/*.elf
+
+# VS Code workspace settings
+.vscode/
+
+# Local upload script (not part of source)
+upload_barkduino.bat
+
+# OS-specific clutter
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Logs and temp files
+*.log
+*.tmp
