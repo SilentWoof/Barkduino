@@ -8,7 +8,7 @@
 
 // 🐾 Trait: Pounce
 void trait_pounce() {
-  const int fast = 10;  // Fast, snappy movement
+  const int fast = 10;
 
   Serial.println("Trait: Pounce");
 

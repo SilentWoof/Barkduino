@@ -3,69 +3,126 @@
 
 #include <Arduino.h>
 #include "leg_primitives.h"
+#include "../configs/motion_config.h"
+#include "../utils/servo_utils.h"
 
 // 🎭 Composite Poses
-// Sleep and Stand are static poses called and always used in the main loop and training loop.
-void poseSleep() {
+
+// ——— Sleep (static only) ———
+void poseSleep(int duration) {
   Serial.println("Pose: Sleep");
-  RearForward();       // Rear legs folded forward.
-  delay(500);
-  FrontBack();         // Front legs folded back
+  RearForward(duration);
+  delay(250);
+  FrontBack(duration);
+}
+void poseSleep() {
+  poseSleep(DEFAULT_SYNC_DURATION);
 }
 
-void poseStand() {
+// ——— Stand ———
+void poseStand(int duration) {
   Serial.println("Pose: Stand");
-  FrontStraight();     // Front legs straight
-  delay(500);
-  RearStraight();      // Rear legs straight
+  FrontStraight(duration);
+  delay(250);
+  RearStraight(duration);
+}
+void poseStand() {
+  poseStand(DEFAULT_SYNC_DURATION);
 }
 
-// The following poses are called in traits and behaviors.
-
-void poseSit() {
+// ——— Sit ———
+void poseSit(int duration) {
   Serial.println("Pose: Sit");
-  RearForward();       // Rear legs folded forward under the body
-  delay(500);
-  FrontStraight();     // Front legs upright for posture
+  RearForward(duration);
+  delay(250);
+  FrontStraight(duration);
+}
+void poseSit() {
+  poseSit(DEFAULT_SYNC_DURATION);
 }
 
-void poseBow() {
+// ——— Bow ———
+void poseBow(int duration) {
   Serial.println("Pose: Bow");
-  RearStraight();         // Rear legs stay upright
-  delay(500);
-  FrontBack();            // Front legs fold back to lower the front
+  RearStraight(duration);
+  delay(250);
+  FrontBack(duration);
+}
+void poseBow() {
+  poseBow(DEFAULT_SYNC_DURATION);
 }
 
-void posePounce() {
+// ——— Pounce ———
+void posePounce(int duration) {
   Serial.println("Pose: Pounce");
-  RearMidwayBack();       // Rear legs crouched, ready to spring
-  delay(500);
-  FrontForward();         // Front legs extended forward
+  RearMidwayBack(duration);
+  delay(250);
+  FrontForward(duration);
+}
+void posePounce() {
+  posePounce(DEFAULT_SYNC_DURATION);
 }
 
-void poseSpread() {
+// ——— Spread ———
+void poseSpread(int duration) {
   Serial.println("Pose: Spread");
-  FrontForward();         // Front legs stretched forward
-  delay(500);
-  RearBack();             // Rear legs stretched backward
+  FrontForward(duration);
+  delay(250);
+  RearBack(duration);
+}
+void poseSpread() {
+  poseSpread(DEFAULT_SYNC_DURATION);
 }
 
+// ——— Point Left ———
+void posePointLeft(int duration) {
+  Serial.println("Pose: Point Left");
+  RearMidwayBack(duration);
+  delay(250);
+  Serial.println("Front legs: asymmetrical point");
+  frontLeftManual(180, duration);  // ✅ Forward (mirrored)
+  frontRightManual(90, duration);  // ✅ Straight
+}
 void posePointLeft() {
-  Serial.println("Pose: Point");
-  RearMidwayBack();       // Rear legs crouched, ready to spring
-  delay(500);
-  Serial.println("Front legs: asymmetrical point");
-  front_left.write(0);    // Front left leg: forward (matches FrontForward left)
-  front_right.write(110); // Front right leg: straight (matches FrontStraight right)
+  posePointLeft(DEFAULT_SYNC_DURATION);
 }
 
-void posePointRight() {
-  Serial.println("Pose: Point");
-  RearMidwayBack();       // Rear legs crouched, ready to spring
-  delay(500);
+// ——— Point Right ———
+void posePointRight(int duration) {
+  Serial.println("Pose: Point Right");
+  RearMidwayBack(duration);
+  delay(250);
   Serial.println("Front legs: asymmetrical point");
-  front_left.write(60);    // Front left leg: forward (matches FrontForward left)
-  front_right.write(180); // Front right leg: straight (matches FrontStraight right)
+  frontLeftManual(90, duration);   // ✅ Straight (mirrored)
+  frontRightManual(180, duration); // ✅ Forward
 }
+void posePointRight() {
+  posePointRight(DEFAULT_SYNC_DURATION);
+}
+
+// ——— Manual Servo Settings ———
+// Sets each leg independently using mirroring-aware wrappers.
+// Ensures physical symmetry regardless of mounting orientation.
+// Includes logging and optional delay for visual confirmation.
+
+void poseManual(int duration) {
+
+  Serial.println("Front Legs: Manually Set");
+  frontLeftManual(90, duration);// 🦵 Front Left — mirrored automatically (90 → 90 physical)
+  frontRightManual(180, duration);// 🦵 Front Right — direct angle (180 → 180 physical)
+
+  delay(250);  // Optional pause between front and rear transitions
+  
+  Serial.println("Rear Legs: Manually Set");
+  rearLeftManual(90, duration);// 🦵 Rear Left — mirrored automatically (90 → 90 physical)  
+  rearRightManual(180, duration);// 🦵 Rear Right — direct angle (180 → 180 physical)
+}
+
+// ——— Default overload using configured sync duration
+void poseManual() {
+  poseManual(DEFAULT_SYNC_DURATION);
+}
+
+
 
 #endif

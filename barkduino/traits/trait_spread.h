@@ -6,7 +6,7 @@
 
 // 🐾 Trait: Spread
 void trait_spread() {
-  const int medium = 25;  // Medium movement speed
+  const int medium = 10;
 
   Serial.println("Trait: Spread");
 

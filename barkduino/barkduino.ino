@@ -10,6 +10,7 @@
 #include "modes/mode_production.h"
 #include "modes/mode_trait_test.h"
 #include "modes/mode_calibration.h"
+#include "modes/mode_cycle_primitives.h"  // ✅ Corrected include
 
 // 🦴 Servo objects
 Servo front_left;
@@ -24,17 +25,15 @@ const int pin_rear_left   = 11;
 const int pin_rear_right  = 12;
 
 // 🚦 Mode Constants
-const int MODE_1 = 1;
-const int MODE_2 = 2;
-const int MODE_3 = 3;
-const int MODE_4 = 4;
+const int MODE_1 = 1;  // Production
+const int MODE_2 = 2;  // Trait Testing
+const int MODE_3 = 3;  // Calibration
+const int MODE_4 = 4;  // Waggle Test
+const int MODE_5 = 5;  // Synchronized Leg Position Cycle
 
-const int ACTIVE_MODE = MODE_1;
-const int SELECTED_TRAIT = 1;     // Used in MODE_2
+const int ACTIVE_MODE = MODE_1; // Set the active mode here
+const int SELECTED_TRAIT = 1;   // Used in Trait Testing Mode
 
-int lastTraitIndex = -1;  // Prevents immediate trait repetition in Mode 1
-
-// 🕒 Trigger control
 unsigned long lastTriggerTime = 0;
 const unsigned long triggerCooldown = 3000;
 bool triggerLocked = false;
@@ -58,6 +57,7 @@ void setup() {
   else if (ACTIVE_MODE == MODE_2) Serial.println("Mode 2 — Trait Testing");
   else if (ACTIVE_MODE == MODE_3) Serial.println("Mode 3 — Calibration");
   else if (ACTIVE_MODE == MODE_4) Serial.println("Mode 4 — Waggle Test");
+  else if (ACTIVE_MODE == MODE_5) Serial.println("Mode 5 — Leg Position Cycle");
   else Serial.println("Unknown");
 
   if (ACTIVE_MODE != MODE_4) {
@@ -72,6 +72,7 @@ void loop() {
     case MODE_2: runTraitTestingLoop(); break;
     case MODE_3: runCalibrationMode(); break;
     case MODE_4: runWaggleTest(); break;
+    case MODE_5: runPrimitiveCycleMode(); break;  // ✅ Matches function name
     default: Serial.println("Invalid mode selected."); break;
   }
 }

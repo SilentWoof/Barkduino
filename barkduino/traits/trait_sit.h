@@ -6,7 +6,7 @@
 
 // 🐾 Trait: Sit
 void trait_sit() {
-  const int medium = 25;  // Medium movement speed
+  const int medium = 10;
 
   Serial.println("Trait: Sit");
 

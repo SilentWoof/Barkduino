@@ -5,7 +5,7 @@
 #include "../poses/leg_primitives.h"
 
 void trait_bow() {
-  const int slow = 40;  // Slower movement speed
+  const int slow = 10;
 
   Serial.println("Trait: Bow");
 

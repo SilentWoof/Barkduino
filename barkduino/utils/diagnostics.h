@@ -2,37 +2,34 @@
 #define DIAGNOSTICS_H
 
 #include <Arduino.h>
-#include <Servo.h>
+#include "../utils/servo_utils.h"
 #include "../poses/pose_composites.h"
 
-// 🦿 Waggle a leg for 3 seconds
-void waggleLeg(Servo& leg, const char* label) {
+// 🦿 Waggle a leg using its manual wrapper
+void waggleManual(void (*legFunc)(int, int), const char* label, int centerAngle = 90, int durationMs = 3000) {
   Serial.print("Waggling "); Serial.println(label);
-  int center = leg.read();
-  for (unsigned long t = millis(); millis() - t < 3000;) {
-    leg.write(center - 20); delay(300);
-    leg.write(center + 20); delay(300);
+
+  for (unsigned long t = millis(); millis() - t < durationMs;) {
+    legFunc(centerAngle - 20, 300);
+    legFunc(centerAngle + 20, 300);
   }
-  leg.write(center); delay(500);
+
+  legFunc(centerAngle, 500);
 }
 
 // 🛠️ Mode 4: Waggle test dispatcher
-void runWaggleTest() {
-  extern Servo front_left;
-  extern Servo front_right;
-  extern Servo rear_left;
-  extern Servo rear_right;
-
+void runWaggleTest(bool loop = true) {
   Serial.println("Mode 4 — Waggle Test");
   poseStand();
 
-  waggleLeg(front_left, "Front Left");
-  waggleLeg(front_right, "Front Right");
-  waggleLeg(rear_left, "Rear Left");
-  waggleLeg(rear_right, "Rear Right");
+  do {
+    waggleManual(frontLeftManual,  "Front Left");
+    waggleManual(frontRightManual, "Front Right");
+    waggleManual(rearLeftManual,   "Rear Left");
+    waggleManual(rearRightManual,  "Rear Right");
+  } while (loop);
 
   Serial.println("Waggle test complete.");
-  while (true);
 }
 
 #endif

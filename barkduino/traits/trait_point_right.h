@@ -6,7 +6,7 @@
 
 // 🐾 Trait: Point Right
 void trait_point_right() {
-  const int slow = 40;  // Slower movement speed
+  const int slow = 10;
 
   Serial.println("Trait: Point Right");
   delay(500);                           // Wait for 0.5 seconds before starting
