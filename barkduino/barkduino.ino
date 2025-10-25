@@ -3,7 +3,8 @@
 #include "poses/leg_primitives.h"
 #include "poses/pose_composites.h"
 #include "traits/trait_bow.h"
-#include "traits/trait_point.h"
+#include "traits/trait_point_left.h"
+#include "traits/trait_point_right.h"
 #include "traits/trait_pounce.h"
 #include "traits/trait_sit.h"
 #include "traits/trait_spread.h"
@@ -31,18 +32,19 @@ const int MODE_2 = 2;  // Trait Testing Mode: Triggered loop with selected trait
 const int MODE_3 = 3;  // Calibration Mode: Static standing pose for tuning
 const int MODE_4 = 4;  // Waggle Test Mode: Cycles each leg for servo check
 
-const int ACTIVE_MODE = MODE_1;  // Set active mode here
-const int SELECTED_TRAIT = 0;    // Index in traitRegistry[]
+const int ACTIVE_MODE = MODE_2;  // Set active mode here
+const int SELECTED_TRAIT = 2;    // Index in traitRegistry[]
 
 // 🧠 Trait registry for modular behavior selection
 typedef void (*TraitFunction)();
 TraitFunction traitRegistry[] = {
   trait_bow,        // Index 0
-  trait_point,      // Index 1
-  trait_pounce,     // Index 2
-  trait_sit,        // Index 3
-  trait_spread,     // Index 4
-  trait_wait        // Index 5
+  trait_point_left, // Index 1
+  trait_point_right,// Index 2
+  trait_pounce,     // Index 3
+  trait_sit,        // Index 4
+  trait_spread,     // Index 5
+  trait_wait        // Index 6
 };
 
 // 🛠️ Setup: Initialize servos, sensor, and pose
