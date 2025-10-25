@@ -3,7 +3,7 @@
 
 void trait_wait() {
   Serial.println("Trait: wait");
-  delay(2000);
+  delay(5000);
 }
 
 #endif
