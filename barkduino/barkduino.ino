@@ -29,8 +29,10 @@ const int MODE_2 = 2;
 const int MODE_3 = 3;
 const int MODE_4 = 4;
 
-const int ACTIVE_MODE = MODE_2;
+const int ACTIVE_MODE = MODE_1;
 const int SELECTED_TRAIT = 1;     // Used in MODE_2
+
+int lastTraitIndex = -1;  // Prevents immediate trait repetition in Mode 1
 
 // 🕒 Trigger control
 unsigned long lastTriggerTime = 0;

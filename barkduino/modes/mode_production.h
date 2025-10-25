@@ -8,8 +8,8 @@
 
 // 🧠 External flags
 extern bool traitInProgress;
+extern int lastTraitIndex;
 
-// 🎭 Mode 1: Random trait execution
 void runProductionLoop() {
   if (traitInProgress) return;
 
@@ -17,8 +17,16 @@ void runProductionLoop() {
     Serial.println("Mode 1 — Production: Trigger detected.");
     poseStand(); delay(250);
 
-    int selected = random(sizeof(traitRegistry) / sizeof(traitRegistry[0]));
+    int traitCount = sizeof(traitRegistry) / sizeof(traitRegistry[0]);
+    int selected;
+
+    // 🔁 Retry until a different trait is selected
+    do {
+      selected = random(traitCount);
+    } while (selected == lastTraitIndex && traitCount > 1);
+
     Serial.print("Selected trait ID "); Serial.println(selected);
+    lastTraitIndex = selected;
     executeTrait(traitRegistry[selected]);
   }
 }
