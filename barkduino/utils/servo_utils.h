@@ -3,35 +3,34 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "../configs/motion_config.h"
 
-// 🔧 Sweep two servos in sync over a duration
-void sweepPair(Servo& s1, int start1, int end1,
-               Servo& s2, int start2, int end2,
-               int duration_ms) {
-  const int steps = 20;
+// 🦴 External servo references
+extern Servo front_left;
+extern Servo front_right;
+extern Servo rear_left;
+extern Servo rear_right;
+
+// 🔁 Sweep two servos in sync with speed control
+void sweepPair(Servo& s1, Servo& s2, int start1, int end1, int start2, int end2, int delayMs) {
+  int steps = abs(end1 - start1);
   for (int i = 0; i <= steps; i++) {
-    float t = (float)i / steps;
-    s1.write(start1 + (end1 - start1) * t);
-    s2.write(start2 + (end2 - start2) * t);
-    delay(duration_ms / steps);
+    int angle1 = start1 + ((end1 - start1) > 0 ? i : -i);
+    int angle2 = start2 + ((end2 - start2) > 0 ? i : -i);
+    s1.write(angle1);
+    s2.write(angle2);
+    delay(delayMs);
   }
 }
 
-// 🔧 Sync rear legs
-void syncRearLegs(int leftTarget, int rightTarget, int duration = DEFAULT_SYNC_DURATION) {
-  extern Servo rear_left;
-  extern Servo rear_right;
-  sweepPair(rear_left, rear_left.read(), leftTarget,
-            rear_right, rear_right.read(), rightTarget, duration);
-}
-
-// 🔧 Sync front legs
-void syncFrontLegs(int leftTarget, int rightTarget, int duration = DEFAULT_SYNC_DURATION) {
-  extern Servo front_left;
-  extern Servo front_right;
-  sweepPair(front_left, front_left.read(), leftTarget,
-            front_right, front_right.read(), rightTarget, duration);
+// 🔁 Sweep a leg pair with speed control
+void syncLegs(Servo& left, Servo& right, int startAngle, int endAngle, int delayMs) {
+  int steps = abs(endAngle - startAngle);
+  for (int i = 0; i <= steps; i++) {
+    int angle = startAngle + ((endAngle - startAngle) > 0 ? i : -i);
+    left.write(angle);
+    right.write(angle);
+    delay(delayMs);
+  }
 }
 
 #endif

@@ -2,15 +2,18 @@
 #define TRAIT_BOW_H
 
 #include <Arduino.h>
-#include "../poses/pose_composites.h"
+#include "../poses/leg_primitives.h"
 
-// 🐾 Trait: Bow
 void trait_bow() {
+  const int slow = 40;  // Slower movement speed
+
   Serial.println("Trait: Bow");
 
-  poseBow();         // Lower front legs, keep rear upright
-  delay(1000);       // Hold the bow for 1 seconds
-  poseStand();       // Return to standing posture
+  RearStraight(slow);
+  FrontBack(slow);
+  delay(500);
+  FrontStraight(slow);
+  delay(250);
+  RearForward(slow);
 }
-
 #endif

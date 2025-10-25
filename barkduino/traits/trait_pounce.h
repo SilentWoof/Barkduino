@@ -3,24 +3,26 @@
 
 #include <Arduino.h>
 #include "../poses/pose_composites.h"
-#include "../poses/leg_primitives.h"  // Needed for FrontStraight()
+#include "../poses/leg_primitives.h"
 #include "../configs/motion_config.h"  // Optional if timing constants are reused
 
 // 🐾 Trait: Pounce
 void trait_pounce() {
+  const int fast = 10;  // Fast, snappy movement
+
   Serial.println("Trait: Pounce");
 
-  posePounce();        // Crouch with rear legs midway back, front legs forward
-  delay(750);          // Initial hold
-  FrontStraight();     // Extend front legs
+  posePounce(fast);         // Crouch with rear legs midway back, front legs forward
+  delay(750);               // Initial hold
+  FrontStraight(fast);      // Extend front legs
   delay(random(100, 1001));
-  posePounce();        // Return to pounce
+  posePounce(fast);         // Return to pounce
   delay(random(100, 3001));
-  FrontStraight();     // Extend again
+  FrontStraight(fast);      // Extend again
   delay(random(100, 1001));
-  posePounce();        // Return again
+  posePounce(fast);         // Return again
   delay(random(100, 3001));
-  poseStand();         // Final stand
+  poseStand(fast);          // Final stand
 }
 
 #endif

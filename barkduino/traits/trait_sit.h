@@ -6,11 +6,13 @@
 
 // 🐾 Trait: Sit
 void trait_sit() {
+  const int medium = 25;  // Medium movement speed
+
   Serial.println("Trait: Sit");
 
-  poseSit();         // Call static sit pose
-  delay(3000);       // Hold for 5 seconds
-  poseStand();       // Return to standing pose
+  poseSit(medium);         // Call static sit pose
+  delay(5000);             // Hold for 5 seconds
+  poseStand(medium);       // Return to standing pose
 }
 
 #endif

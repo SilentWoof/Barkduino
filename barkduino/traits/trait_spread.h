@@ -6,11 +6,13 @@
 
 // 🐾 Trait: Spread
 void trait_spread() {
+  const int medium = 25;  // Medium movement speed
+
   Serial.println("Trait: Spread");
 
-  poseSpread();       // Stretch front legs forward, rear legs back
-  delay(3000);        // Hold the stretch for 3 seconds
-  poseStand();        // Return to standing posture
+  poseSpread(medium);       // Stretch front legs forward, rear legs back
+  delay(3000);              // Hold the stretch for 3 seconds
+  poseStand(medium);        // Return to standing posture
 }
 
 #endif
