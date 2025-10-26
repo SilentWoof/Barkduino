@@ -3,18 +3,19 @@
 
 #include <Arduino.h>
 #include "../poses/leg_primitives.h"
+#include "../utils/motion_speed_presets.h"  // ✅ Speed + step size presets
 
 void trait_bow() {
-  const int slow = 10;
-
   Serial.println("Trait: Bow");
 
   delay(1000);
-  RearStraight(slow);
-  FrontBack(slow);
+  RearStraight(SPEED_STANDARD, STEP_STANDARD);     // 🐢 Smooth rear leg sweep
+  FrontBack(SPEED_DEAD_SLOW, STEP_STANDARD);        // 🐢 Smooth front fold
   delay(2000);
-  FrontStraight(slow);
+  FrontStraight(SPEED_DEAD_SLOW, STEP_STANDARD);    // 🐢 Return to straight
   delay(250);
-  RearForward(slow);
+  RearForward(SPEED_STANDARD, STEP_STANDARD);      // 🐢 Final rear fold
+  delay(1000);
 }
+
 #endif
