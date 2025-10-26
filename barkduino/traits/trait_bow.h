@@ -12,7 +12,7 @@ void trait_bow() {
   delay(1000);
   RearStraight(slow);
   FrontBack(slow);
-  delay(500);
+  delay(2000);
   FrontStraight(slow);
   delay(250);
   RearForward(slow);

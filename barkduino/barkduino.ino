@@ -1,8 +1,5 @@
 #include <Servo.h>
-#include "configs/motion_config.h"
-#include "poses/leg_primitives.h"
-#include "poses/pose_composites.h"
-#include "traits/trait_registry.h"
+#include "utils/motion_config.h"
 #include "utils/trait_executor.h"
 #include "utils/trigger_logic.h"
 #include "utils/servo_utils.h"
@@ -10,7 +7,10 @@
 #include "modes/mode_production.h"
 #include "modes/mode_trait_test.h"
 #include "modes/mode_calibration.h"
-#include "modes/mode_cycle_primitives.h"  // ✅ Corrected include
+#include "modes/mode_cycle_primitives.h"
+#include "poses/leg_primitives.h"
+#include "poses/pose_composites.h"
+#include "traits/trait_registry.h"
 
 // 🦴 Servo objects
 Servo front_left;

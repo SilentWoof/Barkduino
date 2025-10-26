@@ -3,84 +3,76 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "../utils/motion_config.h"  // ⏱️ Centralized motion timing
+#include "../utils/motion_config.h"         // ⏱️ Centralized motion timing
+#include "../utils/motion_speed_presets.h"  // 🎚️ Speed + step size presets
+#include "../utils/servo_utils.h"           // ✅ Updated sync wrappers
 
-// External servo references (declared in main sketch)
-extern Servo front_left;
-extern Servo front_right;
-extern Servo rear_left;
-extern Servo rear_right;
+// 🧩 Primitive Leg Positions (with optional stepSize)
 
-// Synchronization helpers (declared in main sketch)
-void syncRearLegs(int leftTarget, int rightTarget, int duration);
-void syncFrontLegs(int leftTarget, int rightTarget, int duration);
-
-// 🧩 Primitive Leg Positions
-
-// ——— Front (custom speed) ———
-void FrontForward(int duration) {
+// ——— Front (custom speed + optional step size) ———
+inline void FrontForward(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Front legs: folded forward");
-  syncFrontLegs(180, 180, duration);
+  syncFrontLegs(180, 180, duration, stepSize);
 }
 
-void FrontMidwayForward(int duration) {
+inline void FrontMidwayForward(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Front legs: midway to folded forward");
-  syncFrontLegs(135, 135, duration);
+  syncFrontLegs(135, 135, duration, stepSize);
 }
 
-void FrontStraight(int duration) {
+inline void FrontStraight(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Front legs: straight");
-  syncFrontLegs(90, 90, duration);
+  syncFrontLegs(90, 90, duration, stepSize);
 }
 
-void FrontMidwayBack(int duration) {
+inline void FrontMidwayBack(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Front legs: midway to folded back");
-  syncFrontLegs(45, 45, duration);
+  syncFrontLegs(45, 45, duration, stepSize);
 }
 
-void FrontBack(int duration) {
+inline void FrontBack(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Front legs: folded back");
-  syncFrontLegs(00, 00, duration);
+  syncFrontLegs(0, 0, duration, stepSize);
 }
 
-// ——— Rear (custom speed) ———
-void RearForward(int duration) {
+// ——— Rear (custom speed + optional step size) ———
+inline void RearForward(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Rear legs: folded forward");
-  syncRearLegs(180, 180, duration);
+  syncRearLegs(180, 180, duration, stepSize);
 }
 
-void RearMidwayForward(int duration) {
+inline void RearMidwayForward(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Rear legs: midway to folded forward");
-  syncRearLegs(115, 115, duration);
+  syncRearLegs(115, 115, duration, stepSize);
 }
 
-void RearStraight(int duration) {
+inline void RearStraight(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Rear legs: straight");
-  syncRearLegs(70, 70, duration);
+  syncRearLegs(70, 70, duration, stepSize);
 }
 
-void RearMidwayBack(int duration) {
+inline void RearMidwayBack(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Rear legs: midway to folded back");
-  syncRearLegs(25, 25, duration);
+  syncRearLegs(25, 25, duration, stepSize);
 }
 
-void RearBack(int duration) {
+inline void RearBack(int duration, int stepSize = SERVO_STEP_SIZE) {
   Serial.println("Rear legs: folded back");
-  syncRearLegs(0, 0, duration);
+  syncRearLegs(0, 0, duration, stepSize);
 }
 
 // ——— Front (default speed) ———
-void FrontForward()         { FrontForward(DEFAULT_SYNC_DURATION); }
-void FrontMidwayForward()   { FrontMidwayForward(DEFAULT_SYNC_DURATION); }
-void FrontStraight()        { FrontStraight(DEFAULT_SYNC_DURATION); }
-void FrontMidwayBack()      { FrontMidwayBack(DEFAULT_SYNC_DURATION); }
-void FrontBack()            { FrontBack(DEFAULT_SYNC_DURATION); }
+inline void FrontForward()         { FrontForward(DEFAULT_SYNC_DURATION); }
+inline void FrontMidwayForward()   { FrontMidwayForward(DEFAULT_SYNC_DURATION); }
+inline void FrontStraight()        { FrontStraight(DEFAULT_SYNC_DURATION); }
+inline void FrontMidwayBack()      { FrontMidwayBack(DEFAULT_SYNC_DURATION); }
+inline void FrontBack()            { FrontBack(DEFAULT_SYNC_DURATION); }
 
 // ——— Rear (default speed) ———
-void RearForward()          { RearForward(DEFAULT_SYNC_DURATION); }
-void RearMidwayForward()    { RearMidwayForward(DEFAULT_SYNC_DURATION); }
-void RearStraight()         { RearStraight(DEFAULT_SYNC_DURATION); }
-void RearMidwayBack()       { RearMidwayBack(DEFAULT_SYNC_DURATION); }
-void RearBack()             { RearBack(DEFAULT_SYNC_DURATION); }
+inline void RearForward()          { RearForward(DEFAULT_SYNC_DURATION); }
+inline void RearMidwayForward()    { RearMidwayForward(DEFAULT_SYNC_DURATION); }
+inline void RearStraight()         { RearStraight(DEFAULT_SYNC_DURATION); }
+inline void RearMidwayBack()       { RearMidwayBack(DEFAULT_SYNC_DURATION); }
+inline void RearBack()             { RearBack(DEFAULT_SYNC_DURATION); }
 
 #endif

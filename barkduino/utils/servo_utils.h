@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include "../utils/motion_config.h"
+#include "../utils/motion_speed_presets.h"  // ✅ Step size presets
 
 // 🦴 External servo references (declared in barkduino.ino)
 extern Servo front_left;
@@ -51,14 +52,15 @@ void syncLegs(Servo& left, Servo& right,
               int startLeft, int endLeft,
               int startRight, int endRight,
               int delayMs,
-              bool mirrorLeft = false, bool mirrorRight = false) {
-  int stepsLeft  = abs(endLeft - startLeft) / SERVO_STEP_SIZE;
-  int stepsRight = abs(endRight - startRight) / SERVO_STEP_SIZE;
+              bool mirrorLeft = false, bool mirrorRight = false,
+              int stepSize = SERVO_STEP_SIZE) {
+  int stepsLeft  = abs(endLeft - startLeft) / stepSize;
+  int stepsRight = abs(endRight - startRight) / stepSize;
   int steps = max(stepsLeft, stepsRight);
 
   for (int i = 0; i <= steps; i++) {
-    int leftAngle  = startLeft  + ((endLeft  > startLeft)  ? 1 : -1) * min(i, stepsLeft)  * SERVO_STEP_SIZE;
-    int rightAngle = startRight + ((endRight > startRight) ? 1 : -1) * min(i, stepsRight) * SERVO_STEP_SIZE;
+    int leftAngle  = startLeft  + ((endLeft  > startLeft)  ? 1 : -1) * min(i, stepsLeft)  * stepSize;
+    int rightAngle = startRight + ((endRight > startRight) ? 1 : -1) * min(i, stepsRight) * stepSize;
 
     if (mirrorLeft)  left.write(180 - leftAngle);  else left.write(leftAngle);
     if (mirrorRight) right.write(180 - rightAngle); else right.write(rightAngle);
@@ -71,25 +73,25 @@ void syncLegs(Servo& left, Servo& right,
 }
 
 // 🦵 Front leg sync wrapper (left leg is mirrored)
-void syncFrontLegs(int leftTarget, int rightTarget, int duration) {
+void syncFrontLegs(int leftTarget, int rightTarget, int duration, int stepSize = SERVO_STEP_SIZE) {
   int leftStartUnmirrored = 180 - front_left.read();  // ✅ undo mirroring
   int rightStart = front_right.read();
 
   syncLegs(front_left, front_right,
            leftStartUnmirrored, leftTarget,
            rightStart, rightTarget,
-           duration, true, false);
+           duration, true, false, stepSize);
 }
 
 // 🦵 Rear leg sync wrapper (rear left mirrored)
-void syncRearLegs(int leftTarget, int rightTarget, int duration) {
+void syncRearLegs(int leftTarget, int rightTarget, int duration, int stepSize = SERVO_STEP_SIZE) {
   int leftStartUnmirrored = 180 - rear_left.read();  // ✅ undo mirroring
   int rightStart = rear_right.read();
 
   syncLegs(rear_left, rear_right,
            leftStartUnmirrored, leftTarget,
            rightStart, rightTarget,
-           duration, true, false);
+           duration, true, false, stepSize);
 }
 
 #endif
