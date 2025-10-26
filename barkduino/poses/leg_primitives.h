@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "../configs/motion_config.h"  // ⏱️ Centralized motion timing
+#include "../utils/motion_config.h"  // ⏱️ Centralized motion timing
 
 // External servo references (declared in main sketch)
 extern Servo front_left;

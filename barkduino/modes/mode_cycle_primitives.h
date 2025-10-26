@@ -2,7 +2,7 @@
 #define MODE_CYCLE_PRIMITIVES_H
 
 #include <Arduino.h>
-#include "../configs/motion_config.h"
+#include "../utils/motion_config.h"
 #include "../poses/leg_primitives.h"
 #include "../utils/servo_utils.h"
 

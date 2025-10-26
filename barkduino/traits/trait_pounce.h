@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "../poses/pose_composites.h"
 #include "../poses/leg_primitives.h"
-#include "../configs/motion_config.h"  // Optional if timing constants are reused
+#include "../utils/motion_config.h"  // Optional if timing constants are reused
 
 // 🐾 Trait: Pounce
 void trait_pounce() {

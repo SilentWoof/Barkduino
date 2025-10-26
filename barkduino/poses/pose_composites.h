@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "leg_primitives.h"
-#include "../configs/motion_config.h"
+#include "../utils/motion_config.h"
 #include "../utils/servo_utils.h"
 
 // 🎭 Composite Poses

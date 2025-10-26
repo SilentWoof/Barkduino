@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "../configs/motion_config.h"
+#include "../utils/motion_config.h"
 
 // 🦴 External servo references (declared in barkduino.ino)
 extern Servo front_left;
