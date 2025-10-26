@@ -9,7 +9,7 @@ void trait_bow() {
 
   Serial.println("Trait: Bow");
 
-  delau(1000)
+  delay(1000);
   RearStraight(slow);
   FrontBack(slow);
   delay(500);
