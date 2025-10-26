@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "leg_primitives.h"
 #include "../utils/motion_config.h"
+#include "../utils/motion_speed_presets.h"  // ✅ Speed + step size presets
 #include "../utils/servo_utils.h"
 
 // 🧩 pose_composites.h
@@ -17,132 +18,123 @@
 // - Provides both parameterized and default overloads for flexible usage
 //
 // ✅ Functionality:
-// - Each pose function accepts an optional `duration` argument to control motion speed
-// - If no duration is passed, the system defaults to `DEFAULT_SYNC_DURATION`
-// - Poses use primitives from `leg_primitives.h` and mirroring-aware manual calls from `servo_utils.h`
+// - Each pose function accepts `duration` and `stepSize` to control speed and granularity
+// - If no arguments are passed, defaults to SPEED_STANDARD and STEP_STANDARD
+// - Poses use primitives from leg_primitives.h and mirroring-aware manual calls from servo_utils.h
 // - Logging is included for serial feedback and debugging
 //
 // ✅ Usage Examples:
-//     poseStand();                          // Uses default speed
-//     poseBow(SPEED_SLOW);                  // Slower, expressive bow
-//     posePointLeft(SPEED_FAST);            // Asymmetrical gesture with speed override
-//     poseManual(SPEED_STANDARD);           // Direct servo control with symmetry
-//
-// ✅ Notes:
-// - Composite poses are static — they define a final configuration, not dynamic motion
-// - Traits and modes may call these poses as part of larger behavior sequences
-// - Manual poses allow direct angle control for calibration or expressive gestures
+//     poseStand();                                 // Uses standard speed and granularity
+//     poseBow(SPEED_SLOW, STEP_FINE);              // Slower, smoother bow
+//     posePointLeft(SPEED_FAST, STEP_CHUNKY);      // Asymmetrical gesture with overrides
+//     poseManual(SPEED_STANDARD, STEP_STANDARD);   // Direct servo control with symmetry
 
-// ——— Sleep (static only) ———
-void poseSleep(int duration) {
+// ——— Sleep ———
+void poseSleep(int duration, int stepSize) {
   Serial.println("Pose: Sleep");
-  RearForward(duration);
+  RearForward(duration, stepSize);
   delay(250);
-  FrontBack(duration);
+  FrontBack(duration, stepSize);
 }
 void poseSleep() {
-  poseSleep(DEFAULT_SYNC_DURATION);
+  poseSleep(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Stand ———
-void poseStand(int duration) {
+void poseStand(int duration, int stepSize) {
   Serial.println("Pose: Stand");
-  FrontStraight(duration);
+  FrontStraight(duration, stepSize);
   delay(250);
-  RearStraight(duration);
+  RearStraight(duration, stepSize);
 }
 void poseStand() {
-  poseStand(DEFAULT_SYNC_DURATION);
+  poseStand(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Sit ———
-void poseSit(int duration) {
+void poseSit(int duration, int stepSize) {
   Serial.println("Pose: Sit");
-  RearForward(duration);
+  RearForward(duration, stepSize);
   delay(250);
-  FrontStraight(duration);
+  FrontStraight(duration, stepSize);
 }
 void poseSit() {
-  poseSit(DEFAULT_SYNC_DURATION);
+  poseSit(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Bow ———
-void poseBow(int duration) {
+void poseBow(int duration, int stepSize) {
   Serial.println("Pose: Bow");
-  RearStraight(duration);
+  RearStraight(duration, stepSize);
   delay(250);
-  FrontBack(duration);
+  FrontBack(duration, stepSize);
 }
 void poseBow() {
-  poseBow(DEFAULT_SYNC_DURATION);
+  poseBow(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Pounce ———
-void posePounce(int duration) {
+void posePounce(int duration, int stepSize) {
   Serial.println("Pose: Pounce");
-  RearMidwayBack(duration);
+  RearMidwayBack(duration, stepSize);
   delay(250);
-  FrontForward(duration);
+  FrontForward(duration, stepSize);
 }
 void posePounce() {
-  posePounce(DEFAULT_SYNC_DURATION);
+  posePounce(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Spread ———
-void poseSpread(int duration) {
+void poseSpread(int duration, int stepSize) {
   Serial.println("Pose: Spread");
-  FrontForward(duration);
+  FrontForward(duration, stepSize);
   delay(250);
-  RearBack(duration);
+  RearBack(duration, stepSize);
 }
 void poseSpread() {
-  poseSpread(DEFAULT_SYNC_DURATION);
+  poseSpread(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Point Left ———
-void posePointLeft(int duration) {
+void posePointLeft(int duration, int stepSize) {
   Serial.println("Pose: Point Left");
-  RearMidwayBack(duration);
+  RearMidwayBack(duration, stepSize);
   delay(250);
   Serial.println("Front legs: asymmetrical point");
-  frontLeftManual(180, duration);  // ✅ Forward (mirrored)
-  frontRightManual(90, duration);  // ✅ Straight
+  frontLeftManual(180, duration, stepSize);
+  frontRightManual(90, duration, stepSize);
 }
 void posePointLeft() {
-  posePointLeft(DEFAULT_SYNC_DURATION);
+  posePointLeft(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Point Right ———
-void posePointRight(int duration) {
+void posePointRight(int duration, int stepSize) {
   Serial.println("Pose: Point Right");
-  RearMidwayBack(duration);
+  RearMidwayBack(duration, stepSize);
   delay(250);
   Serial.println("Front legs: asymmetrical point");
-  frontLeftManual(90, duration);   // ✅ Straight (mirrored)
-  frontRightManual(180, duration); // ✅ Forward
+  frontLeftManual(90, duration, stepSize);
+  frontRightManual(180, duration, stepSize);
 }
 void posePointRight() {
-  posePointRight(DEFAULT_SYNC_DURATION);
+  posePointRight(SPEED_STANDARD, STEP_STANDARD);
 }
 
 // ——— Manual Servo Settings ———
-// Sets each leg independently using mirroring-aware wrappers.
-// Ensures physical symmetry regardless of mounting orientation.
-// Includes logging and optional delay for visual confirmation.
-
-void poseManual(int duration) {
+void poseManual(int duration, int stepSize) {
   Serial.println("Front Legs: Manually Set");
-  frontLeftManual(90, duration);     // 🦵 Front Left — mirrored automatically
-  frontRightManual(180, duration);   // 🦵 Front Right — direct angle
+  frontLeftManual(90, duration, stepSize);
+  frontRightManual(180, duration, stepSize);
 
-  delay(250);  // Optional pause between front and rear transitions
+  delay(250);
 
   Serial.println("Rear Legs: Manually Set");
-  rearLeftManual(90, duration);      // 🦵 Rear Left — mirrored automatically
-  rearRightManual(180, duration);    // 🦵 Rear Right — direct angle
+  rearLeftManual(90, duration, stepSize);
+  rearRightManual(180, duration, stepSize);
 }
 void poseManual() {
-  poseManual(DEFAULT_SYNC_DURATION);
+  poseManual(SPEED_STANDARD, STEP_STANDARD);
 }
 
 #endif
