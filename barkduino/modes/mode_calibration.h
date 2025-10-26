@@ -2,7 +2,7 @@
 #define MODE_CALIBRATION_H
 
 #include <Arduino.h>
-#include "../configs/motion_config.h"
+#include "../utils/motion_config.h"
 #include "../utils/servo_utils.h"      // ✅ Centralized servo control
 #include "../poses/leg_primitives.h"   // ✅ Leg primitives: FrontStraight, RearStraight
 
