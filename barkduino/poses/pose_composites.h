@@ -6,7 +6,32 @@
 #include "../utils/motion_config.h"
 #include "../utils/servo_utils.h"
 
-// 🎭 Composite Poses
+// 🧩 pose_composites.h
+//
+// This file defines Barkduino's composite poses — reusable, named configurations
+// that choreograph multiple leg primitives into expressive static positions.
+//
+// ✅ Purpose:
+// - Encapsulates common full-body poses like "Sit", "Stand", "Bow", and "Sleep"
+// - Combines front and rear leg primitives with optional delays for visual clarity
+// - Provides both parameterized and default overloads for flexible usage
+//
+// ✅ Functionality:
+// - Each pose function accepts an optional `duration` argument to control motion speed
+// - If no duration is passed, the system defaults to `DEFAULT_SYNC_DURATION`
+// - Poses use primitives from `leg_primitives.h` and mirroring-aware manual calls from `servo_utils.h`
+// - Logging is included for serial feedback and debugging
+//
+// ✅ Usage Examples:
+//     poseStand();                          // Uses default speed
+//     poseBow(SPEED_SLOW);                  // Slower, expressive bow
+//     posePointLeft(SPEED_FAST);            // Asymmetrical gesture with speed override
+//     poseManual(SPEED_STANDARD);           // Direct servo control with symmetry
+//
+// ✅ Notes:
+// - Composite poses are static — they define a final configuration, not dynamic motion
+// - Traits and modes may call these poses as part of larger behavior sequences
+// - Manual poses allow direct angle control for calibration or expressive gestures
 
 // ——— Sleep (static only) ———
 void poseSleep(int duration) {
@@ -106,23 +131,18 @@ void posePointRight() {
 // Includes logging and optional delay for visual confirmation.
 
 void poseManual(int duration) {
-
   Serial.println("Front Legs: Manually Set");
-  frontLeftManual(90, duration);// 🦵 Front Left — mirrored automatically (90 → 90 physical)
-  frontRightManual(180, duration);// 🦵 Front Right — direct angle (180 → 180 physical)
+  frontLeftManual(90, duration);     // 🦵 Front Left — mirrored automatically
+  frontRightManual(180, duration);   // 🦵 Front Right — direct angle
 
   delay(250);  // Optional pause between front and rear transitions
-  
-  Serial.println("Rear Legs: Manually Set");
-  rearLeftManual(90, duration);// 🦵 Rear Left — mirrored automatically (90 → 90 physical)  
-  rearRightManual(180, duration);// 🦵 Rear Right — direct angle (180 → 180 physical)
-}
 
-// ——— Default overload using configured sync duration
+  Serial.println("Rear Legs: Manually Set");
+  rearLeftManual(90, duration);      // 🦵 Rear Left — mirrored automatically
+  rearRightManual(180, duration);    // 🦵 Rear Right — direct angle
+}
 void poseManual() {
   poseManual(DEFAULT_SYNC_DURATION);
 }
-
-
 
 #endif
