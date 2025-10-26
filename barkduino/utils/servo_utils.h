@@ -19,10 +19,9 @@
 // - Enables grouped pose setting and synchronized transitions
 //
 // ✅ Functionality:
-// - Manual wrappers (`*_Manual`) set individual leg angles with optional delay
+// - Manual wrappers (`*_Manual`) now interpolate motion using stepSize and duration
 // - `syncLegs()` interpolates motion between start and end angles for two servos
 // - `syncFrontLegs()` and `syncRearLegs()` apply mirroring and angle correction
-// - All functions support `duration` and `stepSize` for universal timing control
 //
 // ✅ Usage Examples:
 //     frontLeftManual(90);                                // Instant write, no delay
@@ -41,31 +40,69 @@ extern Servo front_right;
 extern Servo rear_left;
 extern Servo rear_right;
 
-// 🖐️ Manual per-leg write wrappers (with optional stepSize)
+// 🖐️ Manual per-leg write wrappers (now interpolated)
 inline void frontLeftManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
-  int mirrored = 180 - angle;
-  Serial.print("front_left → "); Serial.println(mirrored);
-  front_left.write(mirrored);
-  if (duration > 0) delay(duration);
+  int current = 180 - front_left.read();  // unmirror
+  int delta = abs(angle - current);
+  int steps = max(1, delta / stepSize);
+  int delayPerStep = (duration > 0) ? duration / steps : 0;
+  int direction = (angle > current) ? 1 : -1;
+
+  for (int i = 0; i <= steps; i++) {
+    int intermediate = current + direction * i * stepSize;
+    front_left.write(180 - intermediate);  // mirror
+    if (delayPerStep > 0) delay(delayPerStep);
+  }
+
+  front_left.write(180 - angle);  // final correction
 }
 
 inline void frontRightManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
-  Serial.print("front_right → "); Serial.println(angle);
+  int current = front_right.read();
+  int delta = abs(angle - current);
+  int steps = max(1, delta / stepSize);
+  int delayPerStep = (duration > 0) ? duration / steps : 0;
+  int direction = (angle > current) ? 1 : -1;
+
+  for (int i = 0; i <= steps; i++) {
+    int intermediate = current + direction * i * stepSize;
+    front_right.write(intermediate);
+    if (delayPerStep > 0) delay(delayPerStep);
+  }
+
   front_right.write(angle);
-  if (duration > 0) delay(duration);
 }
 
 inline void rearLeftManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
-  int mirrored = 180 - angle;
-  Serial.print("rear_left → "); Serial.println(mirrored);
-  rear_left.write(mirrored);
-  if (duration > 0) delay(duration);
+  int current = 180 - rear_left.read();  // unmirror
+  int delta = abs(angle - current);
+  int steps = max(1, delta / stepSize);
+  int delayPerStep = (duration > 0) ? duration / steps : 0;
+  int direction = (angle > current) ? 1 : -1;
+
+  for (int i = 0; i <= steps; i++) {
+    int intermediate = current + direction * i * stepSize;
+    rear_left.write(180 - intermediate);  // mirror
+    if (delayPerStep > 0) delay(delayPerStep);
+  }
+
+  rear_left.write(180 - angle);
 }
 
 inline void rearRightManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
-  Serial.print("rear_right → "); Serial.println(angle);
+  int current = rear_right.read();
+  int delta = abs(angle - current);
+  int steps = max(1, delta / stepSize);
+  int delayPerStep = (duration > 0) ? duration / steps : 0;
+  int direction = (angle > current) ? 1 : -1;
+
+  for (int i = 0; i <= steps; i++) {
+    int intermediate = current + direction * i * stepSize;
+    rear_right.write(intermediate);
+    if (delayPerStep > 0) delay(delayPerStep);
+  }
+
   rear_right.write(angle);
-  if (duration > 0) delay(duration);
 }
 
 // 🧩 Optional grouped pose setter
