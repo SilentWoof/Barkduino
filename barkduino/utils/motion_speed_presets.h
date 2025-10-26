@@ -10,11 +10,11 @@
 // Use these presets to fine-tune expressive timing per trait or action.
 // Smaller values = faster motion. Larger values = slower, more deliberate motion.
 
-const int VERY_FAST = 2;    // ⚡ Rapid snap motion
-const int FAST      = 5;    // 🏃 Quick but readable
-const int STANDARD  = 10;   // 🎯 Typical gesture speed
-const int SLOW      = 20;   // 🐢 Expressive or cautious
-const int DEAD_SLOW = 40;   // 🧘 Dramatic or theatrical
+const int SPEED_VERY_FAST = 2;    // ⚡ Rapid snap motion
+const int SPEED_FAST      = 5;    // 🏃 Quick but readable
+const int SPEED_STANDARD  = 10;   // 🎯 Typical gesture speed
+const int SPEED_SLOW      = 20;   // 🐢 Expressive or cautious
+const int SPEED_DEAD_SLOW = 40;   // 🧘 Dramatic or theatrical
 
 // 🎚️ Optional step size overrides (default is 5 degrees per step)
 // Use these to control motion granularity independently of speed.
