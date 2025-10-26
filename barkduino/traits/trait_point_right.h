@@ -27,9 +27,31 @@ void trait_point_right() {
 
   delay(500);  // Wait for 0.5 seconds before starting
 
-  posePointRight(SPEED_STANDARD, STEP_STANDARD);  // Asymmetric front leg pose with crouched rear
-  delay(random(1000, 3001));                      // Hold the point for 1 to 3 seconds
-  poseStand(SPEED_STANDARD, STEP_STANDARD);       // Return to standing posture
+  RearMidwayBack(SPEED_STANDARD, STEP_STANDARD);
+  delay(250);
+
+  Serial.println("Front legs: asymmetrical point");
+
+  // 🧪 Debug: check current front_right angle before sweep
+  int frontRightCurrent = 180 - front_right.read();  // unmirror
+  int frontRightTarget = 180;
+  int frontRightDelta = abs(frontRightTarget - frontRightCurrent);
+  int frontRightSteps = max(1, frontRightDelta / STEP_FINE);
+  int frontRightDelayPerStep = max(1, SPEED_DEAD_SLOW / frontRightSteps);
+
+  Serial.print("front_right.read() before sweep = ");
+  Serial.println(front_right.read());
+  Serial.print("frontRight sweep steps = ");
+  Serial.println(frontRightSteps);
+  Serial.print("frontRight delay per step = ");
+  Serial.println(frontRightDelayPerStep);
+
+  // 🐢 Slow sweep first for visual clarity
+  frontRightManual(180, 1, STEP_CHUNKY);
+  frontLeftManual(90, SPEED_STANDARD, STEP_STANDARD);
+  delay(random(2000, 4001));                            // Hold the point for 2 to 4 seconds
+  frontRightManual(90, 1000, STEP_FINE);
+  poseStand(SPEED_STANDARD, STEP_STANDARD);             // Return to standing posture
 }
 
 #endif
