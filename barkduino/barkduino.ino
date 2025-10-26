@@ -32,10 +32,10 @@ const int MODE_4 = 4;  // Waggle Test
 const int MODE_5 = 5;  // Synchronized Leg Position Cycle
 
 const int ACTIVE_MODE = MODE_2; // Set the active mode here
-const int SELECTED_TRAIT = 0;   // Used in Trait Testing Mode
+const int SELECTED_TRAIT = 2;   // Used in Trait Testing Mode
 
 unsigned long lastTriggerTime = 0;
-const unsigned long triggerCooldown = 3000;
+const unsigned long triggerCooldown = 1000;
 bool triggerLocked = false;
 bool traitInProgress = false;
 
