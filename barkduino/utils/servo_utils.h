@@ -4,7 +4,36 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include "../utils/motion_config.h"
-#include "../utils/motion_speed_presets.h"  // ✅ Step size presets
+#include "../utils/motion_speed_presets.h"  // ✅ Speed + step size presets
+
+// 🧩 servo_utils.h
+//
+// This file provides low-level servo control utilities for Barkduino,
+// including manual per-leg angle setting, synchronized leg movement,
+// and mirroring-aware wrappers for physical symmetry.
+//
+// ✅ Purpose:
+// - Abstracts direct servo writes into reusable, readable functions
+// - Ensures consistent mirroring logic for left-side servos
+// - Supports both instant and interpolated motion via stepSize
+// - Enables grouped pose setting and synchronized transitions
+//
+// ✅ Functionality:
+// - Manual wrappers (`*_Manual`) set individual leg angles with optional delay
+// - `syncLegs()` interpolates motion between start and end angles for two servos
+// - `syncFrontLegs()` and `syncRearLegs()` apply mirroring and angle correction
+// - All functions support `duration` and `stepSize` for universal timing control
+//
+// ✅ Usage Examples:
+//     frontLeftManual(90);                                // Instant write, no delay
+//     rearRightManual(180, SPEED_SLOW);                   // Write with delay
+//     setPoseManual(90, 180, 90, 180, SPEED_STANDARD);     // Set all legs at once
+//     syncFrontLegs(0, 180, SPEED_SLOW, STEP_FINE);        // Smooth transition
+//
+// ✅ Notes:
+// - Left-side servos (front/rear) are mirrored automatically
+// - `syncLegs()` uses stepSize to interpolate motion for visual smoothness
+// - All wrappers are designed to be callable from traits, poses, and diagnostics
 
 // 🦴 External servo references (declared in barkduino.ino)
 extern Servo front_left;
@@ -12,39 +41,39 @@ extern Servo front_right;
 extern Servo rear_left;
 extern Servo rear_right;
 
-// 🖐️ Manual per-leg write wrappers
-inline void frontLeftManual(int angle, int duration = 0) {
+// 🖐️ Manual per-leg write wrappers (with optional stepSize)
+inline void frontLeftManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
   int mirrored = 180 - angle;
   Serial.print("front_left → "); Serial.println(mirrored);
   front_left.write(mirrored);
   if (duration > 0) delay(duration);
 }
 
-inline void frontRightManual(int angle, int duration = 0) {
+inline void frontRightManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
   Serial.print("front_right → "); Serial.println(angle);
   front_right.write(angle);
   if (duration > 0) delay(duration);
 }
 
-inline void rearLeftManual(int angle, int duration = 0) {
+inline void rearLeftManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
   int mirrored = 180 - angle;
   Serial.print("rear_left → "); Serial.println(mirrored);
   rear_left.write(mirrored);
   if (duration > 0) delay(duration);
 }
 
-inline void rearRightManual(int angle, int duration = 0) {
+inline void rearRightManual(int angle, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
   Serial.print("rear_right → "); Serial.println(angle);
   rear_right.write(angle);
   if (duration > 0) delay(duration);
 }
 
 // 🧩 Optional grouped pose setter
-inline void setPoseManual(int fl, int fr, int rl, int rr, int duration = 0) {
-  frontLeftManual(fl, duration);
-  frontRightManual(fr, duration);
-  rearLeftManual(rl, duration);
-  rearRightManual(rr, duration);
+inline void setPoseManual(int fl, int fr, int rl, int rr, int duration = 0, int stepSize = SERVO_STEP_SIZE) {
+  frontLeftManual(fl, duration, stepSize);
+  frontRightManual(fr, duration, stepSize);
+  rearLeftManual(rl, duration, stepSize);
+  rearRightManual(rr, duration, stepSize);
 }
 
 // 🔁 Sweep two legs in sync from independent start/end angles
