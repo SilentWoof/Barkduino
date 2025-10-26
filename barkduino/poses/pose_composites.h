@@ -95,32 +95,6 @@ void poseSpread() {
   poseSpread(SPEED_STANDARD, STEP_STANDARD);
 }
 
-// ——— Point Left ———
-void posePointLeft(int duration, int stepSize) {
-  Serial.println("Pose: Point Left");
-  RearMidwayBack(duration, stepSize);
-  delay(250);
-  Serial.println("Front legs: asymmetrical point");
-  frontLeftManual(180, duration, stepSize);
-  frontRightManual(90, duration, stepSize);
-}
-void posePointLeft() {
-  posePointLeft(SPEED_STANDARD, STEP_STANDARD);
-}
-
-// ——— Point Right ———
-void posePointRight(int duration, int stepSize) {
-  Serial.println("Pose: Point Right");
-  RearMidwayBack(duration, stepSize);
-  delay(250);
-  Serial.println("Front legs: asymmetrical point");
-  frontLeftManual(90, duration, stepSize);
-  frontRightManual(180, duration, stepSize);
-}
-void posePointRight() {
-  posePointRight(SPEED_STANDARD, STEP_STANDARD);
-}
-
 // ——— Manual Servo Settings ———
 void poseManual(int duration, int stepSize) {
   Serial.println("Front Legs: Manually Set");
