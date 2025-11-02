@@ -23,10 +23,12 @@
 
 void trait_spread() {
   Serial.println("Trait: Spread");
-
-  poseSpread(SPEED_STANDARD, STEP_STANDARD);     // Stretch front legs forward, rear legs back
-  delay(3000);                                    // Hold the stretch for 3 seconds
+  
+  delay(1000);                                    // Brief pause before spreading
+  poseSpread(SPEED_STANDARD, STEP_STANDARD);      // Stretch front legs forward, rear legs back
+  delay(random(1000, 5001));                      // Hold the stretch for 1 to 5 seconds
   poseStand(SPEED_STANDARD, STEP_STANDARD);       // Return to standing posture
+  delay(1000);                                    // Brief pause after standing
 }
 
 #endif
