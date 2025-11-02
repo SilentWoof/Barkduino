@@ -25,7 +25,7 @@ void trait_sit() {
   Serial.println("Trait: Sit");
 
   poseSit(SPEED_STANDARD, STEP_STANDARD);     // Call static sit pose
-  delay(5000);                                 // Hold for 5 seconds
+  delay(random(3000, 7001));                   // Sit for between 3 and 5 seconds
   poseStand(SPEED_STANDARD, STEP_STANDARD);   // Return to standing pose
 }
 
