@@ -21,7 +21,7 @@
 
 void trait_wait() {
   Serial.println("Trait: Wait");
-  delay(5000);  // Fixed pause duration
+  delay(random(4000, 9001));  // Wait for 4 to 9 seconds
 }
 
 #endif
